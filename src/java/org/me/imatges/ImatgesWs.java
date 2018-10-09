@@ -6,9 +6,17 @@
 package org.me.imatges;
 
 import java.awt.List;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.servlet.ServletException;
 import org.me.clas.Imatge;
 
 /**
@@ -18,21 +26,40 @@ import org.me.clas.Imatge;
 @WebService(serviceName = "ImatgesWs")
 public class ImatgesWs {
 
-    /**
-     * This is a sample web service operation
-     */
-    @WebMethod(operationName = "hello")
-    public String hello(@WebParam(name = "name") String txt) {
-        return "Hello " + txt + " !";
-    }
 
     /**
      * Web service operation
      */
     @WebMethod(operationName = "registerImage")
-    public int registerImage(@WebParam(name = "image") Imatge image) {
+    public int registerImage(@WebParam(name = "image") Imatge image)
+        throws ServletException, IOException{
         //TODO write your implementation code here:
-        return 0;
+        String titol = image.getTitol();
+        String autor = image.getAutor();
+        String data = image.getDataCreacio();
+        String descripcio = image.getDescripcio();
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Error class.forname");
+        }
+        try{
+            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\oriol\\OneDrive\\Escritorio\\loquesea.db");
+            PreparedStatement statement = conn.prepareStatement("insert into imagenes values (?, ?, ?, ?, ?, ? , ?)");
+           statement.setString(1, "DEmomentnose");
+           statement.setString(2, "someususari");
+           statement.setString(3, titol);
+           statement.setString(4, descripcio);
+           statement.setString(5, "algunes paraules");
+           statement.setString(6, autor);
+           statement.setString(7, data);
+           statement.executeUpdate();
+            return 1;
+        }
+        catch(SQLException ex){
+            return 0;
+        }
     }
 
     /**
